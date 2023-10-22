@@ -20,6 +20,10 @@ struct datPrestamos{
 void carga();
 void cargaPrestamo();
 
+void mostrarPrestamos();
+void mostrarLibro(int);
+void mostrarPersona(int);
+
 int main() {
 	int op, band=1;
 	
@@ -31,6 +35,7 @@ int main() {
 		
 		printf("Ingrese 1 para agregar un libro.\n");
 		printf("Ingrese 2 para realizar un prestamo.\n");
+		printf("Ingrese 4 para mostrar la lista de prestamos.\n");
 		printf("\nIngrese 0 para salir.\n");
 		scanf("%d", &op);
 		
@@ -47,6 +52,10 @@ int main() {
 			
 		case 2:
 			cargaPrestamo();
+		break;
+		
+		case 4:
+			mostrarPrestamos();
 		break;
 		
 		default:
@@ -119,9 +128,9 @@ void cargaPrestamo(){
 	fflush(stdin);
 	
 	
-	arch=fopen("personas.dat","r+b");
+	arch=fopen("personas.dat","a+b");
 	if(arch==NULL){
-		printf("\nError al crear el archivo.");
+		printf("\nError al crear el archivo");
 		
 	}else{
 	
@@ -183,7 +192,7 @@ void cargaPrestamo(){
 	strlwr(nomLibroAux);
 	fflush(stdin);
 	
-	arch=fopen("libro.dat","r+b");
+	arch=fopen("libro.dat","a+b");
 	if(arch==NULL){
 		printf("\nError al crear el archivo.");	
 	}else{
@@ -260,5 +269,96 @@ void cargaPrestamo(){
 	}	
 }
 
+void mostrarPrestamos(){
+	
+	int idAuxP, idAuxL;
+	
+	FILE *arch;
+	arch=fopen("prestamos.dat","rb");
+	if(arch==NULL){
+		printf("\nError al crear el archivo clase.bin");
+	}
+	else{
+		fread(&prestamo, sizeof(prestamo),1,arch);
+		
+		while(!feof(arch)){
 
+			printf("\n   MOVIMIENTO %d\n",prestamo.id);
+			
+			printf("\n------Persona------");
+			idAuxP = prestamo.id_persona;
+			mostrarPersona(idAuxP);
+			printf("\n------Libro------ ");
+			idAuxL = prestamo.id_libro;
+			mostrarLibro(idAuxL);
+			printf("Estado: ");
+			puts(prestamo.estado);
+			printf("\n-----------------------\n");	
+				
+				
+			fread(&prestamo, sizeof(prestamo),1,arch);
+		}
+		
+	}
+			
+	fclose(arch);
+}
+
+void mostrarLibro(int idL){
+	FILE *arch;
+	arch=fopen("libro.dat","rb");
+	if(arch==NULL){
+		printf("\nError al crear el archivo clase.bin");
+	}
+	else{
+		fread(&libro, sizeof(libro),1,arch);
+		
+		while(!feof(arch)){
+
+			if(idL == libro.id){
+				printf("\nNombre: ");
+				puts(libro.nombre);
+				printf("editorial: ");
+				puts(libro.editorial);
+				printf("a%co: %ld",164,libro.anio);
+				printf("\n");	
+				
+			}
+				fread(&libro, sizeof(libro),1,arch);
+			
+		}
+		
+	}
+			
+	fclose(arch);
+}
+
+void mostrarPersona(int idP){
+	FILE *arch;
+	arch=fopen("personas.dat","rb");
+	if(arch==NULL){
+		printf("\nError al crear el archivo clase.bin");
+	}
+	else{
+		fread(&personas,sizeof(personas),1,arch);
+		
+		while(!feof(arch)){
+
+			if(idP == personas.id){
+				printf("\nNombre: ");
+				puts(personas.nombre);
+				printf("Apellido: ");
+				puts(personas.apellido);
+				printf("DNI: %ld",personas.dni);
+				printf("\nTelefono: %ld",personas.telefono);
+				printf("\n");	
+			}
+
+			fread(&personas,sizeof(personas),1,arch);
+		}
+		
+	}
+			
+	fclose(arch);
+}
 
