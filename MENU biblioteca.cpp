@@ -3,7 +3,7 @@
 
 struct datLibro{
 		int id, anio;
-		char nombre[20], editorial[20];
+		char nombre[30], editorial[20];
 	}libro;
 	
 struct datPersonas{
@@ -41,6 +41,7 @@ int main() {
 		printf("Ingrese 4 para mostrar lista de prestamo.\n");
 		printf("Ingrese 0 para salir.\n");
 		scanf("%d", &op);
+		printf("\n");
 		
 	
 	switch(op) {
@@ -108,9 +109,10 @@ void carga() {
 		
 		
 		fclose(arch);
+		puts("Libro cargado exitosamente.");
 		
 	}else{
-		printf("Error de apertura de archivo");
+		printf("Error de apertura de archivo libro.dat");
 		printf("\n");
 	}
 	
@@ -127,7 +129,7 @@ void cargaPrestamo(){
 	int encontroP = 0, encontroL = 0;
 	
 	fflush(stdin);
-	printf("Ingrese el nombre de la persona ");
+	printf("Ingrese el nombre de la persona: ");
 	gets(nombreAux);
 	strlwr(nombreAux);
 	fflush(stdin);
@@ -138,7 +140,7 @@ void cargaPrestamo(){
 	
 	arch=fopen("personas.dat","a+b");
 	if(arch==NULL){
-		printf("\nError al crear el archivo.");
+		printf("\nError al crear el archivo personas.dat");
 		
 	}else{
 	
@@ -195,14 +197,14 @@ void cargaPrestamo(){
 	}
 	}
 	
-	printf("Ingrese el nombre del libro ");
+	printf("Ingrese el nombre del libro: ");
 	gets(nomLibroAux);
 	strlwr(nomLibroAux);
 	fflush(stdin);
 	
 	arch=fopen("libro.dat","a+b");
 	if(arch==NULL){
-		printf("\nError al crear el archivo.");	
+		printf("\nError al crear el archivo libro.dat");	
 	}else{
 		
 		fread(&libro,sizeof(libro),1,arch);
@@ -226,7 +228,7 @@ void cargaPrestamo(){
 			arch=fopen("prestamos.dat","a+b");
 			
 			if(arch==NULL){
-				printf("\nError al crear el archivo.");
+				printf("\nError al crear el archivo prestamos.dat");
 				
 			}else{
 				
@@ -246,11 +248,11 @@ void cargaPrestamo(){
 				}
 		
 				if(encontroP == 1){
-					puts("El libro no esta disponible");
+					puts("El libro no esta disponible.");
 				}
 				if(encontroP == 2 || encontroP == 0){
 					
-					puts("El libro esta disponible");
+					puts("El libro esta disponible.");
 					
 					prestamo.id = ultIdP + 1;
 					prestamo.id_libro = idAuxLibro;
@@ -260,6 +262,7 @@ void cargaPrestamo(){
 					fwrite(&prestamo,sizeof(prestamo),1,arch);
 	
 					fclose(arch);
+					puts("Cargado exitosamente.");
 				}
 		
 				
@@ -267,7 +270,7 @@ void cargaPrestamo(){
 		}
 		if(encontroL == 0){
 			fclose(arch);
-			puts("No contamos con ese libro en la biblioteca.");
+			puts("\nNo contamos con ese libro en la biblioteca.");
 		}
 			
 
@@ -287,7 +290,7 @@ void devolver() {
 	
 	arch=fopen("personas.dat","r+b");
 	if(arch==NULL){
-		printf("\nError al crear el archivo.");
+		printf("\nError al crear el archivo personas.dat");
 		
 	}else{
 		
@@ -308,7 +311,7 @@ void devolver() {
 			
 			if(encontro==0) {
 				fclose(arch);
-				printf("No se encontró su DNI");	
+				printf("No se encontro su DNI.");	
 			}
 			else if (encontro==1) {
 				
@@ -318,7 +321,7 @@ void devolver() {
 					strlwr(libroAux);
 					fflush(stdin);
 					
-					printf("\n¿Esta seguro de que el titulo que ingreso es correcto?\n");
+					printf("\n%cEsta seguro de que el titulo que ingreso es correcto?\n",168);
 					printf("Ingrese 1 si es correcto, ingrese 0 si desea cambiar: \n");
 					scanf("%d", &band);
 					
@@ -328,7 +331,7 @@ void devolver() {
 				
 					arch=fopen("libro.dat","r+b");
 					if(arch==NULL){
-					printf("\nError al crear el archivo.");
+					printf("\nError al crear el archivo libro.dat");
 		
 					}else{
 						
@@ -350,13 +353,13 @@ void devolver() {
 							}
 							if(encontro2==0) {
 								fclose(arch);
-								printf("Titulo no encontrado");
+								printf("Titulo no encontrado.");
 							}
 							else {
 								
 								arch=fopen("prestamos.dat","r+b");
 								if(arch==NULL){
-								printf("\nError al crear el archivo.");
+								printf("\nError al crear el archivo prestamos.dat");
 		
 								}else{
 									fread(&prestamo,sizeof(prestamo),1,arch);
@@ -384,7 +387,7 @@ void devolver() {
 									
 									if(encontro3==0) {
 									fclose(arch);
-									printf("no salio");
+									printf("No salio.");
 									}
 									
 									
@@ -411,7 +414,7 @@ void mostrarPrestamos(){
 	FILE *arch;
 	arch=fopen("prestamos.dat","rb");
 	if(arch==NULL){
-		printf("\nError al crear el archivo clase.bin");
+		printf("\nError al abrir el archivo prestamos.dat");
 	}
 	else{
 		fread(&prestamo, sizeof(prestamo),1,arch);
@@ -447,7 +450,7 @@ void mostrarLibro(int idL){
 	FILE *arch;
 	arch=fopen("libro.dat","rb");
 	if(arch==NULL){
-		printf("\nError al crear el archivo clase.bin");
+		printf("\nError al abrir el archivo libro.dat");
 	}
 	else{
 		fread(&libro, sizeof(libro),1,arch);
@@ -457,9 +460,9 @@ void mostrarLibro(int idL){
 			if(idL == libro.id){
 				printf("\nNombre: ");
 				puts(libro.nombre);
-				printf("editorial: ");
+				printf("Editorial: ");
 				puts(libro.editorial);
-				printf("a%co: %ld",164,libro.anio);
+				printf("A%co: %ld",164,libro.anio);
 				printf("\n");	
 				
 			}
@@ -476,7 +479,7 @@ void mostrarPersona(int idP){
 	FILE *arch;
 	arch=fopen("personas.dat","rb");
 	if(arch==NULL){
-		printf("\nError al crear el archivo clase.bin");
+		printf("\nError al abrir el archivo personas.dat");
 	}
 	else{
 		fread(&personas,sizeof(personas),1,arch);
