@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(){
-	
-	struct datPersonas{	
+struct datPersonas{	
 		int id, edad;
 		char nombre[20], apellido[20], domicilio[50];
 		long dni, telefono;		
 	}personas;
+	
+int main(){
 	
 	FILE *arch;
 	arch=fopen("personas.dat","rb");
@@ -17,6 +17,7 @@ int main(){
 	}
 	else{
 		fread(&personas,sizeof(personas),1,arch);
+		
 		while(!feof(arch)){
 
 			printf("\nID: %d",personas.id);
@@ -24,11 +25,11 @@ int main(){
 			puts(personas.nombre);
 			printf("Apellido: ");
 			puts(personas.apellido);
-			printf("\nDNI: %dl",personas.dni);
-			printf("\nTelefono: %dl",personas.telefono);
-			printf("Domicilio: ");
+			printf("DNI: %ld",personas.dni);
+			printf("\nTelefono: %ld",personas.telefono);
+			printf("\nDomicilio: ");
 			puts(personas.domicilio);
-			printf("\nEdad: %d",personas.edad);
+			printf("Edad: %d",personas.edad);
 			printf("\n----------------");	
 				
 		
