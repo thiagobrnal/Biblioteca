@@ -19,7 +19,7 @@ struct datPrestamos{
 	
 void carga();
 void cargaPrestamo();
-
+void devolver();
 void mostrarPrestamos();
 void mostrarLibro(int);
 void mostrarPersona(int);
@@ -27,16 +27,19 @@ void mostrarPersona(int);
 int main() {
 	int op, band=1;
 	
-	printf("-------------------------------------------------------------------------------\n");
-	printf("\t\t\tMENU BIBLIOTECA\n");
-	printf("-------------------------------------------------------------------------------\n");
+
 	
 	while(band!=0) {
 		
+		printf("\n-------------------------------------------------------------------------------\n");
+		printf("\t\t\tMENU BIBLIOTECA\n");
+		printf("-------------------------------------------------------------------------------\n");
+		
 		printf("Ingrese 1 para agregar un libro.\n");
 		printf("Ingrese 2 para realizar un prestamo.\n");
-		printf("Ingrese 4 para mostrar la lista de prestamos.\n");
-		printf("\nIngrese 0 para salir.\n");
+		printf("Ingrese 3 para devolver un prestamo.\n");
+		printf("Ingrese 4 para mostrar lista de prestamo.\n");
+		printf("Ingrese 0 para salir.\n");
 		scanf("%d", &op);
 		
 	
@@ -54,9 +57,14 @@ int main() {
 			cargaPrestamo();
 		break;
 		
+		case 3:
+			devolver();
+		break;
+			
 		case 4:
 			mostrarPrestamos();
 		break;
+			
 		
 		default:
 			printf("\n-------------------------------------------------------------------------------");
@@ -130,7 +138,7 @@ void cargaPrestamo(){
 	
 	arch=fopen("personas.dat","a+b");
 	if(arch==NULL){
-		printf("\nError al crear el archivo");
+		printf("\nError al crear el archivo.");
 		
 	}else{
 	
@@ -203,11 +211,8 @@ void cargaPrestamo(){
 
 			if(strcmp(libro.nombre,nomLibroAux)==0){
 				encontroL=1;
-				puts("ENTRO AL ENCONTROOOO 1 \n");
 			}
-			puts("\nENTRO\n");
 			if (encontroL==0){
-				puts("ENTOR AL NOOOOOO ENCONTRO\n");
 				fread(&libro,sizeof(libro),1,arch);
 			}	
 		}
@@ -269,6 +274,136 @@ void cargaPrestamo(){
 	}	
 }
 
+void devolver() {
+	FILE *arch;
+	long dniAux, idPerAux, idAuxLibro;
+	int encontro=0, encontro2=0, band=0, encontro3=0;
+	char libroAux[20];
+	
+	fflush(stdin);
+	printf("\nIngrese el DNI: ");
+	scanf("%ld", &dniAux);
+	fflush(stdin);
+	
+	arch=fopen("personas.dat","r+b");
+	if(arch==NULL){
+		printf("\nError al crear el archivo.");
+		
+	}else{
+		
+			fread(&personas,sizeof(personas),1,arch);
+			
+			while((!feof(arch))&&(encontro==0)) {
+				
+				if(dniAux==personas.dni) {
+					encontro=1;
+					idPerAux=personas.id;
+					fclose(arch);
+				}
+				else {
+					fread(&personas,sizeof(personas),1,arch);
+				}
+				
+			}
+			
+			if(encontro==0) {
+				fclose(arch);
+				printf("No se encontró su DNI");	
+			}
+			else if (encontro==1) {
+				
+				do {
+					printf("Ingrese el titulo del libro: ");
+					gets(libroAux);
+					strlwr(libroAux);
+					fflush(stdin);
+					
+					printf("\n¿Esta seguro de que el titulo que ingreso es correcto?\n");
+					printf("Ingrese 1 si es correcto, ingrese 0 si desea cambiar: \n");
+					scanf("%d", &band);
+					
+					
+				}while(band!=1);
+				
+				
+					arch=fopen("libro.dat","r+b");
+					if(arch==NULL){
+					printf("\nError al crear el archivo.");
+		
+					}else{
+						
+						fread(&libro,sizeof(libro),1,arch);
+						
+							while((!feof(arch))&&(encontro2==0)) {
+								
+								if((strcmp(libroAux,libro.nombre))==0) {
+									
+									encontro2=1;
+									idAuxLibro=libro.id;
+									fclose(arch);
+																																										
+								}
+								else {
+									fread(&libro,sizeof(libro),1,arch);
+								}
+								
+							}
+							if(encontro2==0) {
+								fclose(arch);
+								printf("Titulo no encontrado");
+							}
+							else {
+								
+								arch=fopen("prestamos.dat","r+b");
+								if(arch==NULL){
+								printf("\nError al crear el archivo.");
+		
+								}else{
+									fread(&prestamo,sizeof(prestamo),1,arch);
+									
+									while((!feof(arch))&&(encontro3==0)) {
+										
+										if((idPerAux==prestamo.id_persona) && (idAuxLibro==prestamo.id_libro)) {										
+										encontro3=1;
+										
+										
+										strcpy(prestamo.estado,"devuelto");
+										fseek(arch,sizeof(prestamo)*(-1),SEEK_CUR);
+										fwrite(&prestamo,sizeof(prestamo),1,arch);
+																			
+										printf("\nPrestamo finalizado\n");
+																				
+										fclose(arch);
+																			
+										}
+										else {
+											fread(&prestamo,sizeof(prestamo),1,arch);											
+										}
+										
+									}
+									
+									if(encontro3==0) {
+									fclose(arch);
+									printf("no salio");
+									}
+									
+									
+																									
+								}
+								
+				
+							}
+	
+		
+	
+					}
+
+			}
+
+	}
+	
+}
+
 void mostrarPrestamos(){
 	
 	int idAuxP, idAuxL;
@@ -282,9 +417,10 @@ void mostrarPrestamos(){
 		fread(&prestamo, sizeof(prestamo),1,arch);
 		
 		while(!feof(arch)){
-
-			printf("\n   MOVIMIENTO %d\n",prestamo.id);
 			
+			if(strcmp(prestamo.estado, "prestado")==0) {
+				
+			printf("\n   MOVIMIENTO %d\n",prestamo.id);			
 			printf("\n------Persona------");
 			idAuxP = prestamo.id_persona;
 			mostrarPersona(idAuxP);
@@ -293,7 +429,10 @@ void mostrarPrestamos(){
 			mostrarLibro(idAuxL);
 			printf("Estado: ");
 			puts(prestamo.estado);
-			printf("\n-----------------------\n");	
+			printf("\n-----------------------\n");
+				
+			}
+			
 				
 				
 			fread(&prestamo, sizeof(prestamo),1,arch);
@@ -361,4 +500,3 @@ void mostrarPersona(int idP){
 			
 	fclose(arch);
 }
-
